@@ -103,9 +103,9 @@ assert np.mean(rewards[-100:]) > 0.0
 # TODO: créer des vidéos de l'agent en action
 
 
-####################
+# ###################
 # 3. Play with SARSA
-####################
+# ###################
 
 
 agent = SarsaAgent(learning_rate=0.3, gamma=0.99, legal_actions=list(range(n_actions)))
@@ -115,3 +115,4 @@ for i in range(1000):
     rewards.append(play_and_train(env, agent))
     if i % 100 == 0:
         print("mean reward", np.mean(rewards[-100:]))
+print("----------TESTING SARSA----------")
