@@ -48,8 +48,7 @@ class QLearningAgent:
         V(s) = max_a Q(s, a) over possible actions.
         """
         value = 0.0
-        # BEGIN SOLUTION
-        # END SOLUTION
+        value = max([self.get_qvalue(state, action) for action in self.legal_actions])
         return value
 
     def update(
@@ -64,6 +63,10 @@ class QLearningAgent:
         """
         q_value = 0.0
         # BEGIN SOLUTION
+        oldq_value = self.get_qvalue(state, action)
+        td_target = reward + self.gamma * self.get_qvalue(next_state, action)
+        td_error = td_target - oldq_value
+        q_value = oldq_value + self.learning_rate * td_error
         # END SOLUTION
 
         self.set_qvalue(state, action, q_value)
@@ -92,6 +95,13 @@ class QLearningAgent:
         action = self.legal_actions[0]
 
         # BEGIN SOLUTION
+        proba = np.random.uniform(0, 1)
+        if proba <= self.epsilon:
+            # pick random
+            action = random.choice(self.legal_actions)
+        else:
+            # pick best 
+            action = self.get_best_action(state)
+        
         # END SOLUTION
-
         return action
