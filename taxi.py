@@ -23,12 +23,12 @@ import gymnasium as gym
 import numpy as np
 from qlearning import QLearningAgent
 from qlearning_eps_scheduling import QLearningAgentEpsScheduling
-from sarsa import SARSAAgent
+from gymnasium.wrappers import RecordVideo
+from sarsa import SarsaAgent
 
 
 env = gym.make("Taxi-v3", render_mode="rgb_array")
 n_actions = env.action_space.n  # type: ignore
-
 
 #################################################
 # 1. Play with QLearningAgent
@@ -36,7 +36,7 @@ n_actions = env.action_space.n  # type: ignore
 
 # You can edit these hyperparameters!
 agent = QLearningAgent(
-    learning_rate=0.5, epsilon=0.25, gamma=0.99, legal_actions=list(range(n_actions))
+    learning_rate=0.3, epsilon=0.1, gamma=0.99, legal_actions=list(range(n_actions))
 )
 
 
@@ -57,16 +57,14 @@ def play_and_train(env: gym.Env, agent: QLearningAgent, t_max=int(1e4)) -> float
         next_s, r, done, _, _ = env.step(a)
 
         # Train agent for state s
-        # BEGIN SOLUTION
-        
+        # BEGIN SOLUTION        
         agent.update(s, a, r, next_s)
         s = next_s
         total_reward+=r
 
         if done:
-            s, _ = env.reset()
+            break
         # END SOLUTION
-
     return total_reward
 
 
@@ -76,8 +74,13 @@ for i in range(1000):
     if i % 100 == 0:
         print("mean reward", np.mean(rewards[-100:]))
 
+print("----------TESTING QLEARNING AGENT----------")
 assert np.mean(rewards[-100:]) > 0.0
-# TODO: créer des vidéos de l'agent en action
+
+# création vidéo
+# env = RecordVideo(env, video_folder="videos", name_prefix="agent", episode_trigger=lambda x: True)
+# test = play_and_train(env, agent)
+# env.close()
 
 #################################################
 # 2. Play with QLearningAgentEpsScheduling
@@ -85,7 +88,7 @@ assert np.mean(rewards[-100:]) > 0.0
 
 
 agent = QLearningAgentEpsScheduling(
-    learning_rate=0.5, epsilon=0.25, gamma=0.99, legal_actions=list(range(n_actions))
+    learning_rate=0.3, epsilon=0.1, gamma=0.99, legal_actions=list(range(n_actions))
 )
 
 rewards = []
@@ -93,6 +96,7 @@ for i in range(1000):
     rewards.append(play_and_train(env, agent))
     if i % 100 == 0:
         print("mean reward", np.mean(rewards[-100:]))
+print("----------TESTING QLEARNING AgentEpsScheduling----------")
 
 assert np.mean(rewards[-100:]) > 0.0
 
@@ -104,7 +108,7 @@ assert np.mean(rewards[-100:]) > 0.0
 ####################
 
 
-agent = SARSAAgent(learning_rate=0.5, gamma=0.99, legal_actions=list(range(n_actions)))
+agent = SarsaAgent(learning_rate=0.3, gamma=0.99, legal_actions=list(range(n_actions)))
 
 rewards = []
 for i in range(1000):
